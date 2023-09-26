@@ -1,5 +1,8 @@
+"""A stateful client and associated data structures."""
 from datetime import datetime, timedelta
 import logging
+
+from homeassistant.exceptions import HomeAssistantError
 
 from .eightslp_api import BedPowerStatus, BedSide, EightSleepAPI
 
@@ -7,6 +10,8 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class BedStatus:
+    """Represents the state of a side of a bed."""
+
     _side: BedSide
     status: BedPowerStatus
     temperature: int
@@ -19,7 +24,8 @@ class BedStatus:
         temperature: int,
         user_id: str,
         target: int,
-    ):
+    ) -> None:
+        """Init a bed state."""
         self.status = status
         self.temperature = temperature
         self.target = target
@@ -28,14 +34,18 @@ class BedStatus:
 
     @property
     def user_id(self) -> str:
+        """Return the user id."""
         return self._user_id
 
     @property
     def side(self) -> BedSide:
+        """Return the bed side the state represents."""
         return self._side
 
 
 class Client:
+    """A Stateful client that interacts with the service."""
+
     _access_token: str
     _refresh_token: str
     _account_user_id: str
@@ -44,16 +54,18 @@ class Client:
 
     sides = dict[BedSide, BedStatus]()
 
-    def __init__(self, refresh_token: str, user_id: str):
+    def __init__(self, refresh_token: str, user_id: str) -> None:
+        """Init the object."""
         if refresh_token is not None and user_id is None:
-            raise Exception("user_id is required with refresh_token")
+            raise InvalidAuth("user_id is required with refresh_token")
 
         self._refresh_token = refresh_token
-        self._access_token = None
+        self._access_token = ""
         self._expires_at = datetime.now() - timedelta(0, 100)
         self._account_user_id = user_id
 
     def initialize(self):
+        """Further init the object that can be run async."""
         user = EightSleepAPI.get_user(self._account_user_id, self._token())
         device = EightSleepAPI.get_device(user.current_device, self._token())
         guest_side = (
@@ -94,6 +106,7 @@ class Client:
             )
 
     def refresh_state(self) -> None:
+        """Pull the latest data and update local state."""
         user = EightSleepAPI.get_user(self._account_user_id, self._token())
         device = EightSleepAPI.get_device(user.current_device, self._token())
         self.sides[BedSide.Right].status = device.right_status
@@ -104,8 +117,9 @@ class Client:
         self.sides[BedSide.Left].target = device.left_target
 
     def set_temp(self, side: BedSide, temperature: int) -> None:
+        """Change the temp."""
         state = self.sides[side]
-        send_power_on = True if state.status == BedPowerStatus.Off else False
+        send_power_on = state.status == BedPowerStatus.Off
         EightSleepAPI.set_temperature(
             state.user_id, temperature, self._token(), send_power_on
         )
@@ -118,8 +132,8 @@ class Client:
         return self._access_token
 
     def set_power(self, side: BedSide, target_state: BedPowerStatus) -> None:
+        """Set the power mode."""
         state = self.sides[side]
-        _LOGGER.info("changing power")
         if target_state == BedPowerStatus.Off:
             EightSleepAPI.turn_off(state.user_id, self._token())
         else:
@@ -127,4 +141,9 @@ class Client:
 
     @property
     def bed_name(self) -> str:
+        """Return the name of the bed."""
         return self._bed_name
+
+
+class InvalidAuth(HomeAssistantError):
+    """Error to indicate there is invalid auth."""

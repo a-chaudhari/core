@@ -25,7 +25,8 @@ async def async_setup_entry(
     hass: HomeAssistant,
     config_entry: config_entries.ConfigEntry,
     async_add_entities: AddEntitiesCallback,
-):
+) -> None:
+    """Set up the entities for the integration."""
     client = hass.data[DOMAIN][config_entry.entry_id]
     beds = []
     for status in client.sides.values():
@@ -36,6 +37,8 @@ async def async_setup_entry(
 
 
 class EightSleepClimate(ClimateEntity):
+    """An object that represents and controls one side of one bed."""
+
     # static attributes
     _attr_max_temp = 10
     _attr_min_temp = -10
@@ -61,7 +64,8 @@ class EightSleepClimate(ClimateEntity):
         status: BedStatus,
         temp_units: UnitOfTemperature,
         hass: HomeAssistant,
-    ):
+    ) -> None:
+        """Init a new object."""
         self._attr_name = f"{client.bed_name} - {status.side.name}"
         self._attr_unique_id = f"{client.bed_name} - {status.user_id}"
         self._attr_temperature_unit = temp_units
@@ -73,10 +77,12 @@ class EightSleepClimate(ClimateEntity):
         self._update_status(self._client.sides[self._side])
 
     async def async_update(self) -> None:
+        """Fetch the current state of the bed."""
         await self._hass.async_add_executor_job(self._client.refresh_state)
         self._update_status(self._client.sides[self._side])
 
     def _update_status(self, status: BedStatus) -> None:
+        _LOGGER.debug("fetching updated status")
         self._attr_target_temperature = status.target
         self._attr_current_temperature = status.temperature
         self._attr_hvac_mode = (
@@ -93,7 +99,7 @@ class EightSleepClimate(ClimateEntity):
             self._attr_hvac_action = HVACAction.OFF
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
-        _LOGGER.info(f"set hvac mode: {hvac_mode}")
+        """Set the mode of the bed side."""
         target_state = (
             BedPowerStatus.On if hvac_mode == HVACMode.HEAT_COOL else BedPowerStatus.Off
         )
@@ -103,8 +109,8 @@ class EightSleepClimate(ClimateEntity):
         self._update_status(self._client.sides[self._side])
 
     async def async_set_temperature(self, **kwargs: Any) -> None:
+        """Set the temperature of the bed side."""
         if ATTR_TEMPERATURE in kwargs:
-            _LOGGER.info(f"set temp to {kwargs[ATTR_TEMPERATURE]}")
             await self._hass.async_add_executor_job(
                 self._client.set_temp, self._side, kwargs[ATTR_TEMPERATURE]
             )

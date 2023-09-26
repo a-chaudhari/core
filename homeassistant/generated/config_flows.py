@@ -16,7 +16,6 @@ FLOWS = {
         "utility_meter",
     ],
     "integration": [
-        "8slp",
         "abode",
         "accuweather",
         "acmeda",
@@ -121,6 +120,7 @@ FLOWS = {
         "edl21",
         "efergy",
         "eight_sleep",
+        "eightslp",
         "electrasmart",
         "electric_kiwi",
         "elgato",

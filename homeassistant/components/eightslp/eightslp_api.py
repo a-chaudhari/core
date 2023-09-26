@@ -1,3 +1,5 @@
+"""Stateless api commands and data structures sent to eightsleep backend."""
+
 from enum import Enum
 import json
 import logging
@@ -13,17 +15,23 @@ APP_BASE_URI = "https://app-api.8slp.net/v1"
 
 
 class BedPowerStatus(Enum):
+    """Represents the power state of a bed side."""
+
     On = 1
     Off = 0
 
 
 class BedSide(Enum):
+    """Enum to represent the sides of a bed."""
+
     Left = "left"
     Right = "right"
     Both = "both"
 
 
 class LoginResponse(NamedTuple):
+    """Response after logging in."""
+
     access_token: str
     token_type: str
     expires_in: int
@@ -32,6 +40,8 @@ class LoginResponse(NamedTuple):
 
 
 class GetDeviceResponse(NamedTuple):
+    """Response showing bed status."""
+
     left_status: BedPowerStatus
     left_target: int
     left_current: int
@@ -43,6 +53,8 @@ class GetDeviceResponse(NamedTuple):
 
 
 class GetUserResponse(NamedTuple):
+    """Response showing user info."""
+
     device_ids: list[str]
     current_device: str
     current_side: BedSide
@@ -52,25 +64,31 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class EightSleepAPI:
+    """Stateless api commands sent to eightsleep backend."""
+
     @staticmethod
-    def send_request(
-        url: str, method: str, payload: object = None, auth_header: str = None
+    def _send_request(
+        url: str,
+        method: str,
+        payload: object | None = None,
+        auth_header: str | None = None,
     ) -> dict:
         headers = {"Content-Type": "application/json"}
         if auth_header is not None:
             headers["Authorization"] = "Bearer " + auth_header
         if object is None:
-            response = requests.request(method, url, headers=headers)
+            response = requests.request(method, url, headers=headers, timeout=60)
         else:
             response = requests.request(
                 method, url, headers=headers, data=json.dumps(payload), timeout=60
             )
-        # print(response.content)
+        _LOGGER.debug(response.content)
         return json.loads(response.content)
 
     @staticmethod
     def login(username: str, password: str) -> LoginResponse:
-        res = EightSleepAPI.send_request(
+        """Log into the service."""
+        res = EightSleepAPI._send_request(
             AUTH_URI,
             "POST",
             {
@@ -93,21 +111,24 @@ class EightSleepAPI:
     def set_temperature(
         user_id: str, temperature: int, auth_token: str, power_on: bool = False
     ) -> None:
-        _LOGGER.info(f"setting temp to: {temperature}")
-        payload = {
-            "currentLevel": int(temperature * 10),
-        }
+        """Set the temperature."""
 
         if power_on:
-            payload["currentState"] = {"type": "smart"}
+            payload = {
+                "currentLevel": int(temperature * 10),
+                "currentState": {"type": "smart"},
+            }
+        else:
+            payload = {"currentLevel": int(temperature * 10)}
 
-        EightSleepAPI.send_request(
+        EightSleepAPI._send_request(
             APP_BASE_URI + f"/users/{user_id}/temperature", "PUT", payload, auth_token
         )
 
     @staticmethod
     def turn_off(user_id: str, auth_token: str) -> None:
-        EightSleepAPI.send_request(
+        """Turn off a bed side."""
+        EightSleepAPI._send_request(
             API_BASE_URI + f"/users/{user_id}/temperature",
             "PUT",
             {"currentState": {"type": "off"}},
@@ -116,7 +137,8 @@ class EightSleepAPI:
 
     @staticmethod
     def turn_on(user_id: str, auth_token: str) -> None:
-        EightSleepAPI.send_request(
+        """Turn on a bed side."""
+        EightSleepAPI._send_request(
             APP_BASE_URI + f"/users/{user_id}/temperature",
             "PUT",
             {"currentState": {"type": "smart"}},
@@ -125,7 +147,8 @@ class EightSleepAPI:
 
     @staticmethod
     def get_user(user_id: str, auth_token: str) -> GetUserResponse:
-        res = EightSleepAPI.send_request(
+        """Get user info."""
+        res = EightSleepAPI._send_request(
             API_BASE_URI + f"/users/{user_id}", "GET", auth_header=auth_token
         )
         side = BedSide(res["user"]["currentDevice"]["side"])
@@ -135,7 +158,8 @@ class EightSleepAPI:
 
     @staticmethod
     def get_device(device_id: str, auth_token: str) -> GetDeviceResponse:
-        res = EightSleepAPI.send_request(
+        """Get device info."""
+        res = EightSleepAPI._send_request(
             API_BASE_URI + f"/devices/{device_id}", "GET", auth_header=auth_token
         )
         dev = res["result"]
@@ -156,7 +180,8 @@ class EightSleepAPI:
 
     @staticmethod
     def refresh(refresh_token: str) -> LoginResponse:
-        res = EightSleepAPI.send_request(
+        """Pull latest data off server."""
+        res = EightSleepAPI._send_request(
             AUTH_URI,
             "POST",
             {
@@ -174,8 +199,10 @@ class EightSleepAPI:
             None,
         )
 
-    def get_device_names(user_id: str, auth_token: str) -> dict[str:str]:
-        res = EightSleepAPI.send_request(
+    @staticmethod
+    def get_device_names(user_id: str, auth_token: str) -> dict[str, str]:
+        """Get device names."""
+        res = EightSleepAPI._send_request(
             APP_BASE_URI + f"/household/users/{user_id}/devices",
             "GET",
             auth_header=auth_token,

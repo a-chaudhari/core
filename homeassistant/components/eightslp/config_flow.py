@@ -13,11 +13,10 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 
 from .const import DOMAIN
-from .eightslp_api import EightSleepAPI
+from .eightslp_api import EightSleepAPI, LoginResponse
 
 _LOGGER = logging.getLogger(__name__)
 
-# TODO adjust the data schema to the data that you need
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required("username"): str,
@@ -32,7 +31,7 @@ class PlaceholderHub:
     TODO Remove this placeholder class and replace with things from your PyPI package.
     """
 
-    data = None
+    data: LoginResponse
 
     # def __init__(self, host: str) -> None:
     #     """Initialize."""
@@ -45,10 +44,9 @@ class PlaceholderHub:
         res = await hass.async_add_executor_job(EightSleepAPI.login, username, password)
         if res.user_id is not None:
             self.data = res
-            _LOGGER.info("setting auth data var")
+            _LOGGER.debug("Setting auth data var")
             return True
-        else:
-            return False
+        return False
 
 
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
@@ -56,10 +54,6 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
-    # TODO validate the data can be used to set up a connection.
-
-    # If your PyPI package is not built with async, pass your methods
-    # to the executor:
 
     hub = PlaceholderHub()
 
@@ -85,7 +79,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for EightSleep2."""
 
     VERSION = 1
-    data = {}
+    data = dict[str, Any]()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None

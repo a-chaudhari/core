@@ -21,8 +21,6 @@ build.json @home-assistant/supervisor
 /homeassistant/scripts/check_config.py @kellerza
 
 # Integrations
-/homeassistant/components/8slp/ @a-chaudhari
-/tests/components/8slp/ @a-chaudhari
 /homeassistant/components/abode/ @shred86
 /tests/components/abode/ @shred86
 /homeassistant/components/accuweather/ @bieniu
@@ -323,6 +321,7 @@ build.json @home-assistant/supervisor
 /homeassistant/components/egardia/ @jeroenterheerdt
 /homeassistant/components/eight_sleep/ @mezz64 @raman325
 /tests/components/eight_sleep/ @mezz64 @raman325
+/homeassistant/components/eightslp/ @a-chaudhari
 /homeassistant/components/electrasmart/ @jafar-atili
 /tests/components/electrasmart/ @jafar-atili
 /homeassistant/components/electric_kiwi/ @mikey0000

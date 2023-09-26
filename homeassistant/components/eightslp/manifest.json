@@ -1,5 +1,5 @@
 {
-  "domain": "8slp",
+  "domain": "eightslp",
   "name": "EightSleep2",
   "codeowners": ["@a-chaudhari"],
   "config_flow": true,
