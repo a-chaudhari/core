@@ -16,7 +16,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
-from .eightslp_client import Client, BedStatus, BedPowerStatus
+from .eightslp_client import BedPowerStatus, BedStatus, Client
 
 _LOGGER = logging.getLogger(__name__)
 

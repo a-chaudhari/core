@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import logging
 
-from .eightslp_api import BedSide, BedPowerStatus, EightSleepAPI
+from .eightslp_api import BedPowerStatus, BedSide, EightSleepAPI
 
 _LOGGER = logging.getLogger(__name__)
 
