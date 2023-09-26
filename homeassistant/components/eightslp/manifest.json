@@ -6,7 +6,7 @@
   "dependencies": [],
   "documentation": "https://www.home-assistant.io/integrations/8slp",
   "homekit": {},
-  "iot_class": "local_polling",
+  "iot_class": "cloud_polling",
   "requirements": [],
   "ssdp": [],
   "zeroconf": []
