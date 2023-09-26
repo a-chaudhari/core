@@ -13,6 +13,7 @@ from homeassistant.components.climate import (
 )
 from homeassistant.const import ATTR_TEMPERATURE, UnitOfTemperature
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
@@ -115,3 +116,14 @@ class EightSleepClimate(ClimateEntity):
                 self._client.set_temp, self._side, kwargs[ATTR_TEMPERATURE]
             )
             self._update_status(self._client.sides[self._side])
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return the device info."""
+        return DeviceInfo(
+            name=self._attr_name,
+            manufacturer="EightSleep",
+            model="Pod 2",
+            sw_version="1.0",
+            identifiers={(DOMAIN, self._attr_unique_id)},
+        )
