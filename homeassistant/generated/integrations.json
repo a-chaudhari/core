@@ -5,6 +5,12 @@
       "integration_type": "virtual",
       "supported_by": "motion_blinds"
     },
+    "8slp": {
+      "name": "EightSleep2",
+      "integration_type": "hub",
+      "config_flow": true,
+      "iot_class": "local_polling"
+    },
     "abode": {
       "name": "Abode",
       "integration_type": "hub",

@@ -16,6 +16,7 @@ FLOWS = {
         "utility_meter",
     ],
     "integration": [
+        "8slp",
         "abode",
         "accuweather",
         "acmeda",

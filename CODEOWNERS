@@ -21,6 +21,8 @@ build.json @home-assistant/supervisor
 /homeassistant/scripts/check_config.py @kellerza
 
 # Integrations
+/homeassistant/components/8slp/ @a-chaudhari
+/tests/components/8slp/ @a-chaudhari
 /homeassistant/components/abode/ @shred86
 /tests/components/abode/ @shred86
 /homeassistant/components/accuweather/ @bieniu

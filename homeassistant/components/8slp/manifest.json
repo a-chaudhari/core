@@ -1,0 +1,13 @@
+{
+  "domain": "8slp",
+  "name": "EightSleep2",
+  "codeowners": ["@a-chaudhari"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://www.home-assistant.io/integrations/8slp",
+  "homekit": {},
+  "iot_class": "local_polling",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": []
+}
