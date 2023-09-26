@@ -48,8 +48,8 @@ class GetDeviceResponse(NamedTuple):
     left_duration: int
     right_status: BedPowerStatus
     right_target: int
-    right_duration: int
     right_current: int
+    right_duration: int
 
 
 class GetUserResponse(NamedTuple):
