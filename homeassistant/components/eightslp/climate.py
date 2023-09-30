@@ -122,7 +122,7 @@ class EightSleepClimate(ClimateEntity):
         """Return the device info."""
         return DeviceInfo(
             name=self._attr_name,
-            manufacturer="EightSleep",
+            manufacturer="Eight Sleep",
             model=self._client.model,
             sw_version=self._client.firmware_version,
             identifiers={(DOMAIN, self._attr_unique_id)},
