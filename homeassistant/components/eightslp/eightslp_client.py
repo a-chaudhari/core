@@ -56,9 +56,6 @@ class Client:
 
     def __init__(self, refresh_token: str, user_id: str) -> None:
         """Init the object."""
-        if refresh_token is not None and user_id is None:
-            raise InvalidAuth("user_id is required with refresh_token")
-
         self._refresh_token = refresh_token
         self._access_token = ""
         self._expires_at = datetime.now() - timedelta(0, 100)
@@ -97,7 +94,7 @@ class Client:
                 guest_user_id,
                 device.left_target,
             )
-            self.sides[BedSide.right] = BedStatus(
+            self.sides[BedSide.Right] = BedStatus(
                 BedSide.Right,
                 device.right_status,
                 device.right_current,
