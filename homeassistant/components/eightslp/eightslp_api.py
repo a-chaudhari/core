@@ -50,6 +50,9 @@ class GetDeviceResponse(NamedTuple):
     right_target: int
     right_current: int
     right_duration: int
+    model_string: str
+    serial_number: str
+    firmware_version: str
 
 
 class GetUserResponse(NamedTuple):
@@ -176,6 +179,7 @@ class EightSleepAPI:
             round(dev["rightTargetHeatingLevel"], -1) / 10,
             round(dev["rightHeatingLevel"], -1) / 10,
             dev["rightHeatingDuration"],
+            dev['modelString'], dev['hubSerial'], dev['firmwareVersion']
         )
 
     @staticmethod

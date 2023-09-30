@@ -68,7 +68,7 @@ class EightSleepClimate(ClimateEntity):
     ) -> None:
         """Init a new object."""
         self._attr_name = f"{client.bed_name} - {status.side.name}"
-        self._attr_unique_id = f"{client.bed_name} - {status.user_id}"
+        self._attr_unique_id = f"{client.serial_number} - {client.bed_name} - {status.user_id}"
         self._attr_temperature_unit = temp_units
 
         self._client = client
@@ -123,7 +123,7 @@ class EightSleepClimate(ClimateEntity):
         return DeviceInfo(
             name=self._attr_name,
             manufacturer="EightSleep",
-            model="Pod 2",
-            sw_version="1.0",
+            model=self._client.model,
+            sw_version=self._client.firmware_version,
             identifiers={(DOMAIN, self._attr_unique_id)},
         )

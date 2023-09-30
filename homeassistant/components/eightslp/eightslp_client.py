@@ -51,6 +51,9 @@ class Client:
     _account_user_id: str
     _expires_at: datetime
     _bed_name: str
+    _firmware_version: str
+    _model: str
+    _serial_number: str
 
     sides = dict[BedSide, BedStatus]()
 
@@ -68,6 +71,9 @@ class Client:
         guest_side = (
             BedSide.Left if user.current_side == BedSide.Right else BedSide.Right
         )
+        self._model = device.model_string
+        self._serial_number = device.serial_number
+        self._firmware_version = device.firmware_version
         guest_user_id = f"guest-{user.current_device}-{guest_side.value}"
         names = EightSleepAPI.get_device_names(self._account_user_id, self._token())
         self._bed_name = names[user.current_device]
@@ -140,6 +146,21 @@ class Client:
     def bed_name(self) -> str:
         """Return the name of the bed."""
         return self._bed_name
+
+    @property
+    def firmware_version(self) -> str:
+        """Return firmware version"""
+        return self._firmware_version
+
+    @property
+    def model(self) -> str:
+        """Return model string"""
+        return self._model
+
+    @property
+    def serial_number(self) -> str:
+        """Return serial number"""
+        return self._serial_number
 
 
 class InvalidAuth(HomeAssistantError):
